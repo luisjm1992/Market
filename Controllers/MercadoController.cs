@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Market.Controllers
 {
     
-    [Route("controller/market")]
+    [Route("market")]
     [ApiController]
     public class MercadoController : ControllerBase
     {
@@ -19,7 +19,7 @@ namespace Market.Controllers
         }
 
 
-        [HttpPost]
+        [HttpPost("api/createmarket")]
         public async Task<ActionResult> LoadMarket(Mercado mercado)
         {
             try
@@ -36,7 +36,7 @@ namespace Market.Controllers
         }
 
 
-        [HttpGet]
+        [HttpGet("api/allmarket")]
         public async Task<ActionResult<List<Mercado>>> GetMarket()
         {
             try

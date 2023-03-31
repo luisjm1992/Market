@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Market.Controllers
 {
-    [Route("controller/sentimiento")]
+    [Route("sentimiento")]
     [ApiController]
     public class SentimientoController : ControllerBase
     {
@@ -17,7 +17,7 @@ namespace Market.Controllers
         }
 
 
-        [HttpPost]
+        [HttpPost("api/postfeeling")]
         public async Task<ActionResult> PostSentimiento(Sentimiento sentimiento)
         {
             try
@@ -33,7 +33,7 @@ namespace Market.Controllers
         }
 
 
-        [HttpGet]
+        [HttpGet("api/getfeeling")]
         public async Task<ActionResult<List<Sentimiento>>> GetSentimiento()
         {
             try

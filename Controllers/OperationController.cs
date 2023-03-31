@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Market.Controllers
 {
-    [Route("controller/operacion")]
+    [Route("operacion")]
     [ApiController]
     public class OperationController : ControllerBase
     {
@@ -26,7 +26,7 @@ namespace Market.Controllers
         }
 
 
-            [HttpPost]
+            [HttpPost("api/createoperation")]
             public async Task<ActionResult> PostOperation(OperationDTO operationdto)
             {
                 try
@@ -53,12 +53,13 @@ namespace Market.Controllers
                 }
             }
 
-            [HttpGet]
+            [HttpGet("api/alloperation")]
             public async Task<List<OptenerOpDTO>> GetOperaion()
             {
                 var operation = await _dataContext.Operations.ToListAsync();
                 return mapper.Map<List<OptenerOpDTO>>(operation);
             }
+
             
 
             //crear metodo para hacer el resumen de las operaciones. 
