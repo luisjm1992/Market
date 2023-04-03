@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Market.Controllers
 {
-    [Route("operacion")]
+    [Route("api/operacion")]
     [ApiController]
     public class OperationController : ControllerBase
     {
@@ -25,8 +25,8 @@ namespace Market.Controllers
             this._dataContext = _dataContext;
         }
 
-
-            [HttpPost("api/createoperation")]
+            //codigo para crear objeto
+            [HttpPost("crearOperacion")]
             public async Task<ActionResult> PostOperation(OperationDTO operationdto)
             {
                 try
@@ -53,16 +53,97 @@ namespace Market.Controllers
                 }
             }
 
-            [HttpGet("api/alloperation")]
-            public async Task<List<OptenerOpDTO>> GetOperaion()
+            [HttpGet("optenerOperacion")]
+            public async Task<ActionResult<List<OptenerOpDTO>>> GetOperaion()
             {
-                var operation = await _dataContext.Operations.ToListAsync();
-                return mapper.Map<List<OptenerOpDTO>>(operation);
+                try
+                {
+                    var operation = await _dataContext.Operations
+                        .ToListAsync();
+
+                    return mapper.Map<List<OptenerOpDTO>>(operation);   
+                }
+                catch(Exception ex)
+                {
+                    return BadRequest($"Error en la solicitud {ex.Message}");
+                }
             }
 
-            
+            [HttpGet("{id}")]
+            public async Task<ActionResult<OptenerOpDTO>> GetOperationById(int id)
+            {
+                try
+                {
+                    var existOperation = await _dataContext.Operations
+                        .FindAsync(id);
 
-            //crear metodo para hacer el resumen de las operaciones. 
-            //https://www.youtube.com/watch?v=uy_xd3Xwt5M&ab_channel=JuanGCarmona
+                    if(existOperation == null)
+                    {
+                        return NotFound();
+                    }
+                    return Ok(existOperation);
+                }
+                catch(Exception ex)
+                {
+                    return BadRequest($"Ha ocurrido un error al procesar la solicitud. {ex.Message}");
+                }
+            }
+
+            [HttpPut("{id}")]
+            public async Task<ActionResult> UpdateOperation(OperationDTO operationDTO, int id)
+            {
+                try
+                {
+                    var existsOpeartion = await _dataContext.Operations
+                        .FindAsync(id);
+
+                    if(existsOpeartion == null)
+                    {
+                        return NotFound();
+                    }
+
+                    var actualizar = mapper.Map<Operation>(operationDTO);
+
+                    existsOpeartion.Fecha = operationDTO.Fecha;
+                    existsOpeartion.TpOperation = operationDTO.TpOperation;
+                    existsOpeartion.IdMercado = operationDTO.IdMercado;
+                    existsOpeartion.IdSentimiento = operationDTO.IdSentimiento;
+                    existsOpeartion.Stop = operationDTO.Stop;
+                    existsOpeartion.PrecioEntrada = operationDTO.PrecioEntrada;
+                    existsOpeartion.PrecioSalida = operationDTO.PrecioSalida;
+                    
+                    
+                    _dataContext.Update(actualizar);
+                    await _dataContext.SaveChangesAsync();
+                    return Ok("Elemento Actualizado");
+
+                }
+                catch(Exception ex)
+                {
+                    return BadRequest($"Ha ocurrido un error al procesar la solicitud. {ex.Message}");
+                }
+            }
+
+            [HttpDelete("{id}")]
+            public async Task<ActionResult> DeleteOperation(int id)
+            {
+                try
+                {
+                    var existingOperation = await _dataContext.Operations.FindAsync(id);
+
+                    if (existingOperation == null)
+                    {
+                        return NotFound();
+                    }
+
+                    _dataContext.Operations.Remove(existingOperation);
+                    await _dataContext.SaveChangesAsync();
+                    return NoContent();
+                }
+                catch(Exception ex)
+                {
+                    return BadRequest($"Ha ocurrido un error al procesar la solicitud. {ex.Message}");
+                }
+            }
     }
 }

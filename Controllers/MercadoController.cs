@@ -1,5 +1,7 @@
 using System.Net;
+using AutoMapper;
 using Market.Context;
+using Market.DTOs;
 using Market.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -7,23 +9,26 @@ using Microsoft.EntityFrameworkCore;
 namespace Market.Controllers
 {
     
-    [Route("market")]
+    [Route("api/mercado")]
     [ApiController]
     public class MercadoController : ControllerBase
     {
         private readonly DataContext _dataContext;
+        private readonly IMapper mapper;
 
-        public MercadoController(DataContext dataContext)
+        public MercadoController(DataContext dataContext, IMapper mapper )
         {
             this._dataContext = dataContext;
+            this.mapper = mapper;
         }
 
 
-        [HttpPost("api/createmarket")]
-        public async Task<ActionResult> LoadMarket(Mercado mercado)
+        [HttpPost("crearMercado")]
+        public async Task<ActionResult> LoadMarket(MercadoDTO mercadoDto)
         {
             try
             {
+                var mercado = mapper.Map<Mercado>(mercadoDto);
                 _dataContext.Mercados.Add(mercado);
                 await _dataContext.SaveChangesAsync();
                 return Ok("Datos Ingresados");
@@ -36,14 +41,14 @@ namespace Market.Controllers
         }
 
 
-        [HttpGet("api/allmarket")]
-        public async Task<ActionResult<List<Mercado>>> GetMarket()
+        [HttpGet("optenerMercado")]
+        public async Task<ActionResult<List<OptenerMercadoDTO>>> GetMarket()
         {
             try
             {
                  var mercados = await _dataContext.Mercados
                 .ToListAsync();
-            return Ok(mercados);
+                return mapper.Map<List<OptenerMercadoDTO>>(mercados);
             }
             catch(Exception ex)
             {
@@ -54,11 +59,12 @@ namespace Market.Controllers
 
 
          [HttpGet("{id}")]
-        public async Task<ActionResult<Mercado>> UpdateMarket(int id)
+        public async Task<ActionResult<OptenerMercadoDTO>> UpdateMarket(int id)
         {   
             try
             {
-                var existe = await _dataContext.Mercados.FindAsync(id);
+                var existe = await _dataContext.Mercados
+                    .FindAsync(id);
                 if(existe == null)
                 {
                     return NotFound();
@@ -97,7 +103,7 @@ namespace Market.Controllers
 
     
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateMarket(int id,Mercado mercado)
+        public async Task<ActionResult> UpdateMarket(int id,OptenerMercadoDTO optenerMercadoDTO)
         {
             try
             {
@@ -106,9 +112,13 @@ namespace Market.Controllers
                 {
                      return NotFound();
                 }
-                existingMarket.NameMarket = mercado.NameMarket;
-                existingMarket.PriceMarket = mercado.PriceMarket;
-                _dataContext.Mercados.Update(existingMarket);
+
+                var actualizar = mapper.Map<Mercado>(optenerMercadoDTO);
+
+                existingMarket.NameMarket = optenerMercadoDTO.NameMarket;
+                existingMarket.PriceMarket = optenerMercadoDTO.PriceMarket;
+
+               _dataContext.Update(existingMarket);
                 await _dataContext.SaveChangesAsync();
                 return Ok(existingMarket);
 

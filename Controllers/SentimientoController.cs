@@ -1,27 +1,32 @@
 using System.Net;
+using AutoMapper;
 using Market.Context;
+using Market.DTOs;
 using Market.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Market.Controllers
 {
-    [Route("sentimiento")]
+    [Route("api/sentimiento")]
     [ApiController]
     public class SentimientoController : ControllerBase
     {
         public DataContext _dataContext { get; set; }
-        public SentimientoController(DataContext _dataContext)
+                private readonly IMapper mapper;
+        public SentimientoController(DataContext _dataContext, IMapper mapper )
         {
             this._dataContext = _dataContext;
+            this.mapper = mapper;
         }
 
 
-        [HttpPost("api/postfeeling")]
-        public async Task<ActionResult> PostSentimiento(Sentimiento sentimiento)
+        [HttpPost("crearSentimiento")]
+        public async Task<ActionResult> PostSentimiento(SentimientoDto sentimientoDto)
         {
             try
             {
+                var sentimiento = mapper.Map<Sentimiento>(sentimientoDto);
                 _dataContext.Sentimientos.Add(sentimiento);
                 await _dataContext.SaveChangesAsync();
                 return Ok("Datos ingresados");
@@ -33,13 +38,13 @@ namespace Market.Controllers
         }
 
 
-        [HttpGet("api/getfeeling")]
-        public async Task<ActionResult<List<Sentimiento>>> GetSentimiento()
+        [HttpGet("optenerSentimiento")]
+        public async Task<ActionResult<List<OptenerSentimientoDTO>>> GetSentimiento()
         {
             try
             {
-                var sentimiento = await _dataContext.Sentimientos.ToListAsync();
-                return Ok(sentimiento);
+                var existeSentimiento = await _dataContext.Sentimientos.ToListAsync();
+                return mapper.Map<List<OptenerSentimientoDTO>>(existeSentimiento);
             }
             catch(Exception ex)
             {
@@ -50,16 +55,16 @@ namespace Market.Controllers
 
         
         [HttpGet("{id}")]
-        public async Task<ActionResult<Sentimiento>> GetSentimiento(int id)
+        public async Task<ActionResult<OptenerSentimientoDTO>> GetSentimiento(int id)
         {
             try
             {
-                var existe = await _dataContext.Sentimientos.FindAsync(id);
-                if(existe == null)
+                var existeSentimiento = await _dataContext.Sentimientos.FindAsync(id);
+                if(existeSentimiento == null)
                 {
                     return NotFound();
                 }
-                return Ok(existe);
+                return Ok(existeSentimiento);
             }
             catch(Exception ex)
             {
@@ -92,7 +97,7 @@ namespace Market.Controllers
 
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdatSentimiento(int id,Sentimiento sentimiento)
+        public async Task<ActionResult> UpdatSentimiento(OptenerSentimientoDTO optenerSentimientoDTO, int id)
         {
             try
             {
@@ -102,9 +107,10 @@ namespace Market.Controllers
                     return NotFound();
                 }
 
-                existingSentimiento.NameSentimiento = sentimiento.NameSentimiento;
+                var sentimiento = mapper.Map<Sentimiento>(optenerSentimientoDTO);
+                existingSentimiento.NameSentimiento = optenerSentimientoDTO.NameSentimiento;
                 await _dataContext.SaveChangesAsync();
-
+                
                 return Ok(existingSentimiento);
             }
             catch(Exception ex)

@@ -31,7 +31,7 @@ namespace Market.DTOs
         [Required(ErrorMessage ="{0} Este parametro es requerido")]
         public double PrecioSalida { get; set; }
 
-        public double DineroOperacion { get; private set; }
+        //public double DineroOperacion { get; private set; }
     
     }
 }

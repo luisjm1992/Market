@@ -11,6 +11,9 @@ namespace Market.Utilidades
             
             CreateMap<OperationDTO, Operation>();
             CreateMap<Operation, OptenerOpDTO>();
+
+            CreateMap<MercadoDTO, Mercado>();
+            CreateMap<Mercado, OptenerMercadoDTO>();
         }
     }
 }
