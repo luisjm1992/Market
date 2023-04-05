@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Net;
 using AutoMapper;
 using Market.Context;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace Market.Controllers
 {
@@ -18,20 +20,24 @@ namespace Market.Controllers
     {
         private readonly DataContext _dataContext;
         private readonly IMapper mapper;
+        private readonly UserManager<IdentityUser> userManager;
 
-        public MercadoController(DataContext dataContext, IMapper mapper )
+        public MercadoController(DataContext dataContext, IMapper mapper, UserManager<IdentityUser> userManager )
         {
             this._dataContext = dataContext;
             this.mapper = mapper;
+            this.userManager = userManager;
         }
 
 
-        [HttpPost("crearMercado")]
+       [HttpPost("crearMercado")]
         public async Task<ActionResult> LoadMarket(MercadoDTO mercadoDto)
         {
             try
             {
                 var mercado = mapper.Map<Mercado>(mercadoDto);
+                var usuarioActual = await userManager.GetUserAsync(HttpContext.User);
+                mercado.UserId = usuarioActual;
                 _dataContext.Mercados.Add(mercado);
                 await _dataContext.SaveChangesAsync();
                 return Ok("Datos Ingresados");
@@ -43,21 +49,26 @@ namespace Market.Controllers
         }
 
 
+
+
         [HttpGet("optenerMercado")]
         public async Task<ActionResult<List<OptenerMercadoDTO>>> GetMarket()
         {
             try
             {
-                 var mercados = await _dataContext.Mercados
-                .ToListAsync();
+               var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Obtiene el Id del usuario actual
+                var mercados = await _dataContext.Mercados
+                    .Where(m => m.UserId.Id == userId) // Filtra los mercados por el Id del usuario actual
+                    .ToListAsync();
+
                 return mapper.Map<List<OptenerMercadoDTO>>(mercados);
             }
             catch(Exception ex)
             {
                 return BadRequest($"Error en la solicitud {ex.Message}");
             }
-           
         }
+
 
 
          [HttpGet("{id}")]

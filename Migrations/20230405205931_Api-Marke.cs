@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Market.Migrations
 {
-    public partial class Inicialapi : Migration
+    public partial class ApiMarke : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -46,47 +46,6 @@ namespace Market.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Cuentas",
-                columns: table => new
-                {
-                    IdCuenta = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Fecha = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DineroIngresado = table.Column<float>(type: "real", nullable: false),
-                    DineroRetirado = table.Column<float>(type: "real", nullable: false),
-                    DineroGanado = table.Column<float>(type: "real", nullable: false),
-                    DineroPerdido = table.Column<float>(type: "real", nullable: false),
-                    TotalMensual = table.Column<float>(type: "real", nullable: false),
-                    OperacionesHechas = table.Column<int>(type: "int", nullable: false),
-                    OperacionesGanadas = table.Column<int>(type: "int", nullable: false),
-                    OperacionesPerdidas = table.Column<int>(type: "int", nullable: false),
-                    OperacionesBe = table.Column<int>(type: "int", nullable: false),
-                    TasaAciertos = table.Column<float>(type: "real", nullable: false),
-                    TasaPerdidas = table.Column<float>(type: "real", nullable: false),
-                    TasaBe = table.Column<float>(type: "real", nullable: false),
-                    RatioGanador = table.Column<int>(type: "int", nullable: false),
-                    RatioPerdedor = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Cuentas", x => x.IdCuenta);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Mercados",
-                columns: table => new
-                {
-                    IdMercado = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    NameMarket = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PriceMarket = table.Column<double>(type: "float", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Mercados", x => x.IdMercado);
                 });
 
             migrationBuilder.CreateTable(
@@ -209,6 +168,60 @@ namespace Market.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Cuentas",
+                columns: table => new
+                {
+                    IdCuenta = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Fecha = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DineroIngresado = table.Column<float>(type: "real", nullable: false),
+                    DineroRetirado = table.Column<float>(type: "real", nullable: false),
+                    DineroGanado = table.Column<float>(type: "real", nullable: false),
+                    DineroPerdido = table.Column<float>(type: "real", nullable: false),
+                    TotalMensual = table.Column<float>(type: "real", nullable: false),
+                    OperacionesHechas = table.Column<int>(type: "int", nullable: false),
+                    OperacionesGanadas = table.Column<int>(type: "int", nullable: false),
+                    OperacionesPerdidas = table.Column<int>(type: "int", nullable: false),
+                    OperacionesBe = table.Column<int>(type: "int", nullable: false),
+                    TasaAciertos = table.Column<float>(type: "real", nullable: false),
+                    TasaPerdidas = table.Column<float>(type: "real", nullable: false),
+                    TasaBe = table.Column<float>(type: "real", nullable: false),
+                    RatioGanador = table.Column<int>(type: "int", nullable: false),
+                    RatioPerdedor = table.Column<int>(type: "int", nullable: false),
+                    UsuarioId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IdentityUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Cuentas", x => x.IdCuenta);
+                    table.ForeignKey(
+                        name: "FK_Cuentas_AspNetUsers_IdentityUserId",
+                        column: x => x.IdentityUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Mercados",
+                columns: table => new
+                {
+                    IdMercado = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    NameMarket = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PriceMarket = table.Column<double>(type: "float", nullable: false),
+                    UserIdId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Mercados", x => x.IdMercado);
+                    table.ForeignKey(
+                        name: "FK_Mercados_AspNetUsers_UserIdId",
+                        column: x => x.UserIdId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Operations",
                 columns: table => new
                 {
@@ -289,6 +302,16 @@ namespace Market.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Cuentas_IdentityUserId",
+                table: "Cuentas",
+                column: "IdentityUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Mercados_UserIdId",
+                table: "Mercados",
+                column: "UserIdId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Operations_CuentaIdCuenta",
                 table: "Operations",
                 column: "CuentaIdCuenta");
@@ -328,9 +351,6 @@ namespace Market.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
                 name: "Cuentas");
 
             migrationBuilder.DropTable(
@@ -338,6 +358,9 @@ namespace Market.Migrations
 
             migrationBuilder.DropTable(
                 name: "Sentimientos");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
         }
     }
 }

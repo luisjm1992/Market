@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Identity;
 
 namespace Market.Models
@@ -26,7 +27,9 @@ namespace Market.Models
         // Propiedades de navegación
         public ICollection<Operation> Operaciones { get; set; }
         public string UsuarioId { get; set; }
-        public IdentityUser Usuario { get; set; }
+         [ForeignKey("IdentityUser")]
+        public string IdentityUserId { get; set; }
+        public IdentityUser IdentityUser { get; set; }
 
     }
 }

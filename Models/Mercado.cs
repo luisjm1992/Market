@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Identity;
 
 namespace Market.Models
 {
@@ -12,6 +13,8 @@ namespace Market.Models
 
         [Required(ErrorMessage ="{0} Este parametro es requerido")]
         public double PriceMarket { get; set; }
+
+        public IdentityUser UserId { get; set; }
 
         public List<Operation> OperationList { get; set; }
     }

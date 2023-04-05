@@ -45,6 +45,9 @@ namespace Market.Migrations
                     b.Property<string>("Fecha")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("IdentityUserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int>("OperacionesBe")
                         .HasColumnType("int");
 
@@ -76,11 +79,11 @@ namespace Market.Migrations
                         .HasColumnType("real");
 
                     b.Property<string>("UsuarioId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("IdCuenta");
 
-                    b.HasIndex("UsuarioId");
+                    b.HasIndex("IdentityUserId");
 
                     b.ToTable("Cuentas");
                 });
@@ -100,7 +103,12 @@ namespace Market.Migrations
                     b.Property<double>("PriceMarket")
                         .HasColumnType("float");
 
+                    b.Property<string>("UserIdId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("IdMercado");
+
+                    b.HasIndex("UserIdId");
 
                     b.ToTable("Mercados");
                 });
@@ -387,11 +395,20 @@ namespace Market.Migrations
 
             modelBuilder.Entity("Market.Models.Cuenta", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Usuario")
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "IdentityUser")
                         .WithMany()
-                        .HasForeignKey("UsuarioId");
+                        .HasForeignKey("IdentityUserId");
 
-                    b.Navigation("Usuario");
+                    b.Navigation("IdentityUser");
+                });
+
+            modelBuilder.Entity("Market.Models.Mercado", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "UserId")
+                        .WithMany()
+                        .HasForeignKey("UserIdId");
+
+                    b.Navigation("UserId");
                 });
 
             modelBuilder.Entity("Market.Models.Operation", b =>
