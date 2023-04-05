@@ -12,17 +12,13 @@ namespace Market.Models
         [Required(ErrorMessage ="{0} Este parametro es requerido")]
         public string Fecha { get; set; }
 
-        
         [Required(ErrorMessage ="{0} Este parametro es requerido")]
         [EnumDataType(typeof(TipoOperacion))]
         public TipoOperacion TpOperation { get; set; }
 
-        //foreingKey
-        [ForeignKey("IdMercado")]
         [Required(ErrorMessage ="{0} Este parametro es requerido")]
         public int IdMercado { get; set; }
 
-        [ForeignKey("IdSentimiento")]
         [Required(ErrorMessage ="{0} Este parametro es requerido")]
         public int IdSentimiento { get; set; }
         
@@ -38,9 +34,10 @@ namespace Market.Models
         public int Puntos { get; set; }
         public double DineroOperacion { get; set; }
         public string Resultado { get; set; }
-
-        public Mercado MercadoFk { get; set; }
-        public Sentimiento SentimientoFk { get; set; }
+        
+        // Propiedades de navegación
+        public int IdCuenta { get; set; }
+        public Cuenta Cuenta { get; set; }
         
     }
 }

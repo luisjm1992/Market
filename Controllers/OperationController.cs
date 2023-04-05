@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Diagnostics;
 using System.Net;
 using AutoMapper;
@@ -7,11 +8,14 @@ using Market.IServices;
 using Market.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Market.Controllers
 {
     [Route("api/operacion")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class OperationController : ControllerBase
     {
         public DataContext _dataContext { get; set; }
@@ -31,6 +35,8 @@ namespace Market.Controllers
             {
                 try
                 {
+                    // optener el identificador
+
                     var mercado = await _dataContext.Mercados.FindAsync(operationdto.IdMercado);
                     double precioMercado = mercado.PriceMarket;
                     var datoEntrada = operationdto.PrecioEntrada;
@@ -42,7 +48,7 @@ namespace Market.Controllers
                     operation.DineroOperacion = resultado;
                     operation.Puntos = _operationService.puntosMercado(resultado, precioMercado);
                     operation.Resultado = _operationService.calificar(resultado);
-                    
+
                     _dataContext.Add(operation);
                     await _dataContext.SaveChangesAsync();
                     return Ok();

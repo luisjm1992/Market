@@ -3,6 +3,8 @@ using AutoMapper;
 using Market.Context;
 using Market.DTOs;
 using Market.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +13,7 @@ namespace Market.Controllers
     
     [Route("api/mercado")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class MercadoController : ControllerBase
     {
         private readonly DataContext _dataContext;
@@ -37,7 +40,6 @@ namespace Market.Controllers
             {
                 return BadRequest($"Ha ocurrido un error al procesar la solicitud. {ex.Message}");
             }
-            
         }
 
 

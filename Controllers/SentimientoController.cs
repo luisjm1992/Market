@@ -3,6 +3,8 @@ using AutoMapper;
 using Market.Context;
 using Market.DTOs;
 using Market.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +12,7 @@ namespace Market.Controllers
 {
     [Route("api/sentimiento")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class SentimientoController : ControllerBase
     {
         public DataContext _dataContext { get; set; }
